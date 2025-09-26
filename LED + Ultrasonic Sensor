@@ -1,0 +1,29 @@
+from machine import Pin, time_pulse_us
+from time import sleep
+
+# Setup pins
+trigger = Pin(3, Pin.OUT)      # Trigger pin of HC-SR04
+echo = Pin(2, Pin.IN)          # Echo pin of HC-SR04
+led = Pin(15, Pin.OUT)         # LED connected to GP15
+
+def get_distance():
+    trigger.low()
+    sleep(0.002)
+    trigger.high()
+    sleep(0.01)
+    trigger.low()
+
+    duration = time_pulse_us(echo, 1, 30000)  # Wait for echo high
+    distance = (duration * 0.0343) / 2        # Convert to cm
+    return distance
+
+while True:
+    dist = get_distance()
+    print("Distance:", dist, "cm")
+
+    if dist < 20:         # If object is closer than 20 cm
+        led.on()
+    else:
+        led.off()
+
+    sleep(0.5)
